@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { CardComp } from "../../components/CardComp";
-import { TableView } from "../../components/TableView";
-import { CountService } from "../../service";
+import CardComp from "../../components/CardComp/CardComp";
+import TableView from "../../components/TableView/TableView";
+import { CountService } from "../../service/Count.service";
 const AdminPage = () => {
     const [totalCount, setTotalCount] = useState();
     const [deletedCount, setDeletedCount] = useState();
@@ -47,4 +47,4 @@ const AdminPage = () => {
     );
 };
 
-export {AdminPage}
+export default AdminPage;

@@ -14,4 +14,4 @@ const CardComp = ({ count, title }) => {
     );
 };
 
-export {CardComp}
+export default CardComp;

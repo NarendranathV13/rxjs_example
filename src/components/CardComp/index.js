@@ -1,1 +1,1 @@
-export * from './CardComp'
+// export * from './CardComp'

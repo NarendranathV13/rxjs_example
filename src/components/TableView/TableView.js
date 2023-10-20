@@ -88,4 +88,4 @@ const TableView = () => {
     );
 };
 
-export { TableView };
+export default TableView;
