@@ -1,23 +1,15 @@
-import logo from './logo.svg';
+
 import './App.css';
+
+// import Dummy2 from './pages/Dummy/Dummy2';
+import { AdminPage } from './pages/AdminPage';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <AdminPage />
+     
+      {/* <Dummy2 /> */}
     </div>
   );
 }
