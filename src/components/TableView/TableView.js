@@ -1,34 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { GetAxiosData, EditAxiosData } from "../../Api/ApiMethods";
 import { CountService } from "../../service/Count.service";
+import { distinct, from } from "rxjs";
+import { filter, take } from "rxjs";
 
 const TableView = () => {
     const [userData, setUserData] = useState([]);
     const [deleteCount, setDeleteCount] = useState(0);
-
     useEffect(() => {
         GetAxiosData("/Formdata")
             .then(response => {
                 setUserData(response.data);
                 CountService.sendTotal(response.data.length)
                 const initDeleteCount = localStorage.getItem("deleteCount");
-                CountService.deletedUser( initDeleteCount ? initDeleteCount :0)
+                CountService.deletedUser(initDeleteCount ? initDeleteCount : 0)
             })
             .catch(error => {
                 console.error("Error fetching data:", error);
             });
     }, []);
-    const showAll = () =>{
+    const showAll = () => {
         GetAxiosData("/Formdata")
-        .then(response => {
-            setUserData(response.data);
-            CountService.sendTotal(response.data.length)
-            const initDeleteCount = localStorage.getItem("deleteCount");
-            CountService.deletedUser( initDeleteCount ? initDeleteCount :0)
-        })
-        .catch(error => {
-            console.error("Error fetching data:", error);
-        });
+            .then(response => {
+                setUserData(response.data);
+                CountService.sendTotal(response.data.length)
+                const initDeleteCount = localStorage.getItem("deleteCount");
+                CountService.deletedUser(initDeleteCount ? initDeleteCount : 0)
+                console.log("show all")
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
     }
 
     const handleDeleteUser = (id) => {
@@ -65,37 +67,69 @@ const TableView = () => {
                 console.error("Error updating user:", error);
             });
     }
+    // const handleFilter = (status) => {
+    //     setActive(status);
+        
+    // }
+    // useEffect(() => {
+    //     const source$ = from(userData);
+    //     const filteredData$ = source$.pipe(
+    //         filter(item => item.active_status === active)
+    //     );
+    //     const subscription = filteredData$.subscribe(result => {
+            
+    //         setUserData(prevData => [...prevData, result]);
+    //         console.log(result, "result")
+    //     });
+    //     return () => {subscription.unsubscribe();
+    //         setUserData([])};
+    // }, [active]);
 
-    const handleActiveClick = async () => {
-        try {
-            const response = await GetAxiosData("/Formdata");
-            const activeUsers = response.data.filter(user => user.active_status);
-            setUserData(activeUsers);
-        } catch (error) {
-            console.error("Error fetching active users:", error);
-        }
+    const handleActiveClick = () =>{
+        setUserData([])
+        const source$ = from(userData);
+        const filteredData$ = source$.pipe(
+            filter(item => item.active_status === true),
+            distinct(user => user.id), // Apply distinct on user IDs
+            take(5)
+        );
+        console.log("active")
+        const subscription = filteredData$.subscribe(result => {
+            
+            setUserData(prevData => [...prevData, result]);
+            console.log(result, "result")
+        });
+        return () => {
+            subscription.unsubscribe();
+           
+        };
     }
-
-    const handleInactiveClick = async () => {
-        try {
-            const response = await GetAxiosData("/Formdata");
-            const inactiveUsers = response.data.filter(user => !user.active_status);
-            setUserData(inactiveUsers);
-        } catch (error) {
-            console.error("Error fetching inactive users:", error);
-        }
+    const handleInActiveClick = () =>{
+        setUserData([])
+        const source$ = from(userData);
+        const filteredData$ = source$.pipe(
+            filter(item => item.active_status === false),
+            distinct(user => user.id), // Apply distinct on user IDs
+        );
+        const subscription = filteredData$.subscribe(result => {
+            setUserData(prevData => [...prevData, result]);
+            console.log(result, "result")
+           
+        });
+        console.log("in-active", userData)
+        return () => {
+            subscription.unsubscribe();
+        };
     }
-
-
     return (
         <>
             <div className=" container">
                 <div className=" row d-flex justify-content-between">
                     <div className=" col-lg-">
-                        <button type="button" className="btn btn-warning" onClick={handleActiveClick}>Active</button>
+                        <button type="button" className="btn btn-warning" onClick={() => handleActiveClick()}>Active</button>
                     </div>
                     <div className=" col-lg-4">
-                        <button type="button" className="btn btn-info" onClick={handleInactiveClick}>In-Active</button>
+                        <button type="button" className="btn btn-info" onClick={() => handleInActiveClick()}>In-Active</button>
                     </div>
                     <div className=" col-lg-4">
                         <button type="button" className="btn btn-info" onClick={showAll}>All users</button>
